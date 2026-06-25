@@ -91,7 +91,7 @@ export default function App() {
             />
           </Screen>
         )}
-        
+
        {page === "doors" && (
               <Screen key="doors" zoom>
                 <DoorsPage
@@ -429,12 +429,16 @@ function LoginPage({ onBack, onLoginSuccess, isLoggedIn, onLogout }: {
 
     try {
       if (isForgot) {
-        // Demo — no backend endpoint, simulate email sent
-        await new Promise((r) => setTimeout(r, 1200));
-        setSuccessMsg(`Reset instructions sent to ${email}. Check your inbox!`);
-        setIsLoading(false);
-        return;
-      }
+          const res = await fetch("/api/auth/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          if (!res.ok) throw new Error("Failed to send reset email");
+          setSuccessMsg(`Reset link sent to ${email}. Check your inbox!`);
+          setIsLoading(false);
+          return;
+        }
 
       if (isRegister) {
         const res = await fetch("/api/auth/signup", {
